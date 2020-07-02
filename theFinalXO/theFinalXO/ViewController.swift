@@ -1,8 +1,8 @@
 //
 //  ViewController.swift
-//  IOS-XO-CW5
+//  theFinalXO
 //
-//  Created by lulu rashed on 6/27/20.
+//  Created by lulu rashed on 6/30/20.
 //  Copyright © 2020 LULU. All rights reserved.
 //
 
@@ -12,7 +12,7 @@ import AudioToolbox
 
 class ViewController: UIViewController {
     
-   
+    
     var bombSoundEffect: AVAudioPlayer?
     
     @IBOutlet weak var turnLabel: UILabel!
@@ -23,8 +23,9 @@ class ViewController: UIViewController {
     
     
     @IBOutlet weak var imageView: UIImageView!
-  var xCounter = 0
-  var oCounter = 0
+    
+    var xCounter = 0
+    var oCounter = 0
     
     
     
@@ -41,37 +42,23 @@ class ViewController: UIViewController {
     
     var turn = 0
     
-   let images = [#imageLiteral(resourceName: "dark blue bg"),#imageLiteral(resourceName: "blue pg"),#imageLiteral(resourceName: "light-blue_bg"),#imageLiteral(resourceName: "gray bg")]
-
+    let images = [#imageLiteral(resourceName: "dark blue bg"),#imageLiteral(resourceName: "blue pg"),#imageLiteral(resourceName: "light-blue_bg"),#imageLiteral(resourceName: "gray bg")]
     
-    @IBAction func sound(_ sender: Any) {
-        audioPlayer.play()
-    }
+    var backgroundSong: AVAudioPlayer?
     
-    @IBAction func mute(_ sender: Any) {
-        if audioPlayer.isPlaying{
-            
-            audioPlayer.pause()
-        }else{
-            
-          
-            
-        }
-        
-        
-    }
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-        do{
-            audioPlayer = try AVAudioPlayer(contentsOf: URL.init(fileURLWithPath: Bundle.main.path(forResource: "song", ofType:"mp3")!))
-            audioPlayer.prepareToPlay()
-        }
-        catch{
-            print(error)
-        }
         
+        // Do any additional setup after loading the view.
+        let path = Bundle.main.path(forResource: "song.mp3", ofType:nil)!
+        let url = URL(fileURLWithPath: path)
+        
+        do {
+            backgroundSong = try AVAudioPlayer(contentsOf: url)
+            backgroundSong?.play()
+        } catch {
+            // couldn't load file :(
+        }
         
     }
     
@@ -114,7 +101,7 @@ class ViewController: UIViewController {
         imageView.image = images.randomElement()
         
         
-    
+        
     }
     
     func okAlert(title: String, message: String)
@@ -132,46 +119,61 @@ class ViewController: UIViewController {
         oCounterLabel.text = String(oCounter)
         if turn % 2 == 0{
             
-           /* do{
-                audioPlayer = try AVAudioPlayer(contentsOf: URL.init(fileURLWithPath: Bundle.main.path(forResource: "ong", ofType:"mp3")!))
-                audioPlayer.prepareToPlay()
-            }
-            catch{
-                print(error)
-            }
-           */
+            let path = Bundle.main.path(forResource: "xo.mp3", ofType:nil)!
+            let url = URL(fileURLWithPath: path)
             
-            
+            do {
+                bombSoundEffect = try AVAudioPlayer(contentsOf: url)
+                bombSoundEffect?.play()
+            } catch {
+                // couldn't load file :(
+            }
             
             sender.setTitle("X", for: .normal)
-            sender.setTitleColor(.systemGreen, for: .normal)
+            sender.setTitleColor(.systemPink, for: .normal)
             turnLabel.text = "O Turn"
-          
+            
         }else{
             sender.setTitle("O", for: .normal)
-            sender.setTitleColor(.red, for: .normal)
+            sender.setTitleColor(.systemPurple, for: .normal)
             turnLabel.text = "X Turn"
-           
+            let path = Bundle.main.path(forResource: "xo2.mp3", ofType:nil)!
+            let url = URL(fileURLWithPath: path)
+            
+            do {
+                bombSoundEffect = try AVAudioPlayer(contentsOf: url)
+                bombSoundEffect?.play()
+            } catch {
+                // couldn't load file :(
+            }
         }
+        
+        
+        
+        
         sender.isUserInteractionEnabled = false
         turn += 1
         
         if checkWinner(player: "X"){
+            okAlert(title: "X WINNS🎊!", message: "reset the game now!!")
             theWinner()
             xCounter += 1
         }
         if checkWinner(player: "O"){
-           theWinner()
+            okAlert(title: "O WINNS🎊!", message: "reset the game now!!")
+            theWinner()
             oCounter += 1
             
         }else if turn == 9{
             okAlert(title: "NO ONE WINS⚠️", message: "reset the game now!!")
         }
-   let generator = UINotificationFeedbackGenerator()
-             generator.notificationOccurred(.success)
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
         
- AudioServicesPlayAlertSoundWithCompletion(SystemSoundID(kSystemSoundID_Vibrate)) { }
-
+        AudioServicesPlayAlertSoundWithCompletion(SystemSoundID(kSystemSoundID_Vibrate)) { }
+        
+        theWinner()
+        
     }
     
     
@@ -204,24 +206,37 @@ class ViewController: UIViewController {
             
         }
         
-        func theWinner(){
-            if xCounter == 3{
-                okAlert(title: "x WINNS 3 TIME", message: "OK")
-            }else if oCounter == 3{
-                okAlert(title: "o WINNS 3 TIME", message: "ok")
-            }
-                
+    }
+    func theWinner(){
+        if xCounter == 3{
+            okAlert(title: "X WINNS 3 TIME", message: "OK")
+            let path = Bundle.main.path(forResource: "win.mp3", ofType:nil)!
+            let url = URL(fileURLWithPath: path)
+            
+            do {
+                bombSoundEffect = try AVAudioPlayer(contentsOf: url)
+                bombSoundEffect?.play()
+            } catch {
+                // couldn't load file :(
             }
             
+        }else if oCounter == 3{
+            okAlert(title: "O WINNS 3 TIME", message: "ok")
+            let path = Bundle.main.path(forResource: "win.mp3", ofType:nil)!
+            let url = URL(fileURLWithPath: path)
+            
+            do {
+                bombSoundEffect = try AVAudioPlayer(contentsOf: url)
+                bombSoundEffect?.play()
+            } catch {
+                // couldn't load file :(
+            }
             
             
             
         }
         
-      
-        
-        
         
     }
     
-
+}
